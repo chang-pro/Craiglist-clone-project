@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ListingStatus {
+  DRAFT
+  PENDING_REVIEW
+  ACTIVE
+  PAUSED
+  EXPIRED
+  DELETED
+}
+
+enum ListingType {
+  STANDARD
+  FEATURED
+  PREMIUM
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  listings    Listing[]
+}
+
+model Listing {
+  id          String        @id @default(cuid())
+  title       String
+  description String
+  price       Float
+  status      ListingStatus @default(PENDING_REVIEW)
+  type        ListingType   @default(STANDARD)
+  images      Image[]
+  category    Category      @relation(fields: [categoryId], references: [id])
+  categoryId  String
+  author      User          @relation(fields: [userId], references: [id])
+  userId      String
+  location    String?
+  views       Int           @default(0)
+  expiresAt   DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([categoryId])
+  @@index([userId])
+  @@index([status])
+}
+
+model Image {
+  id        String   @id @default(cuid())
+  url       String
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  listingId String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([listingId])
+}
+
+model User {
+  id        String    @id
+  email     String    @unique
+  name      String?
+  phone     String?
+  listings  Listing[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
