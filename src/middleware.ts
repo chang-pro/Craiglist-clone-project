@@ -1,20 +1,17 @@
 // src/middleware.ts
-import { authMiddleware } from "@clerk/nextjs";
 
-export default authMiddleware({
-  publicRoutes: [
-    "/",
-    "/categories/:slug",
-    "/listings/:id",
-    "/api/webhook/clerk",
-    "/api/webhook/stripe",
-  ],
-  ignoredRoutes: [
-    "/api/webhook/clerk",
-    "/api/webhook/stripe",
-  ],
-});
+import { clerkMiddleware } from '@clerk/nextjs/server';
 
+export default clerkMiddleware();
+
+// Apply the middleware to specific routes
 export const config = {
-  matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)'],
+  matcher: [
+    '/listings/create',
+    '/listings/:id',
+    '/api/webhook/clerk',
+    '/api/webhook/stripe',
+    '/((?!.*\\.[\\w]+$|_next).*)',
+    '/(api|trpc)(.*)',
+  ],
 };

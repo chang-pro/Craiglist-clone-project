@@ -1,4 +1,3 @@
-// src/components/listings/create-listing-form.tsx
 'use client';
 
 import { useState } from 'react';
@@ -23,7 +22,6 @@ export default function CreateListingForm({ categories }: CreateListingFormProps
     setError(null);
 
     const formData = new FormData(event.currentTarget);
-    
     try {
       const listingData: ListingFormData = {
         title: formData.get('title') as string,
@@ -32,10 +30,12 @@ export default function CreateListingForm({ categories }: CreateListingFormProps
         categoryId: formData.get('categoryId') as string,
         location: formData.get('location') as string,
         type: 'STANDARD',
-        images
+        images,
       };
 
-      const result = await createListing(listingData);
+      const req = {}; // This should be replaced with your actual request object if available
+
+      const result = await createListing(req, listingData); // Pass `req` and `listingData`
       router.push(`/listings/${result.listingId}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create listing');
@@ -48,11 +48,9 @@ export default function CreateListingForm({ categories }: CreateListingFormProps
     const files = event.target.files;
     if (!files?.length) return;
 
-    // In a real implementation, you would upload to your storage service here
-    // This is a placeholder that creates fake URLs
     const newImages = Array.from(files).map((file, index) => ({
       url: URL.createObjectURL(file),
-      order: images.length + index
+      order: images.length + index,
     }));
 
     setImages([...images, ...newImages]);
@@ -89,7 +87,7 @@ export default function CreateListingForm({ categories }: CreateListingFormProps
           required
           className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
         >
-          {categories.map(category => (
+          {categories.map((category) => (
             <option key={category.id} value={category.id}>
               {category.name}
             </option>

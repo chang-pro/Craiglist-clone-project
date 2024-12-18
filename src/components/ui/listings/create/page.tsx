@@ -1,12 +1,11 @@
-// src/app/listings/create/page.tsx
 import { getAuth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import prisma from '@/lib/actions/prisma';
 import CreateListingForm from '@/components/ui/listings/create-listing-form';
 
-export default async function CreateListingPage() {
-  const { userId } = getAuth();
+export default async function CreateListingPage({ req }: { req: any }) {
+  const { userId } = getAuth(req); // Pass 'req' as the argument
   
   if (!userId) {
     redirect('/sign-in');

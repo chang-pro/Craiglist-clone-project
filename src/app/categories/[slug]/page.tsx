@@ -3,28 +3,30 @@ import { notFound } from "next/navigation";
 import CategoryPageClient from "./category-page-client";
 
 const categories = {
-  "motors": { name: "Motors", icon: "car" },
+  motors: { name: "Motors", icon: "car" },
   "buy-sell": { name: "Buy/Sell/Trade", icon: "tags" },
-  "property": { name: "Property", icon: "home" },
-  "services": { name: "Services", icon: "wrench" },
-  "pets": { name: "Pets", icon: "paw-print" },
-  "community": { name: "Community", icon: "users" },
-  "jobs": { name: "Jobs", icon: "briefcase" }
+  property: { name: "Property", icon: "home" },
+  services: { name: "Services", icon: "wrench" },
+  pets: { name: "Pets", icon: "paw-print" },
+  community: { name: "Community", icon: "users" },
+  jobs: { name: "Jobs", icon: "briefcase" },
 } as const;
 
-export default function CategoryPage({
-  params
-}: {
-  params: { slug: string }
-}) {
-  const category = categories[params.slug as keyof typeof categories];
-  
+interface CategoryPageProps {
+  params: { slug: string };
+}
+
+export default async function CategoryPage({ params }: CategoryPageProps) {
+  // Await the params to ensure it's resolved
+  const { slug } = await params;
+
+  // Get the category using the resolved slug
+  const category = categories[slug as keyof typeof categories];
+
+  // Handle invalid slugs by showing a 404 page
   if (!category) {
     notFound();
   }
 
-  return <CategoryPageClient 
-    name={category.name}
-    iconName={category.icon}
-  />;
+  return <CategoryPageClient name={category.name} iconName={category.icon} />;
 }

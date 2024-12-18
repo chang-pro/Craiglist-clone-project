@@ -47,38 +47,39 @@ class ListingError extends Error {
   }
 }
 
-export async function createListing(formData: ListingFormData) {
-  const { userId } = getAuth();
-  
-  if (!userId) {
-    throw new ListingError('You must be logged in to create a listing', 'UNAUTHORIZED');
-  }
-
-  try {
-    const validatedData = listingSchema.parse(formData);
-
-    const listing = await prisma.listing.create({
-      data: {
-        ...validatedData,
-        userId,
-        status: 'PENDING_REVIEW',
-        images: {
-          create: validatedData.images
-        }
-      },
-      include: {
-        images: true
-      }
-    });
-
-    revalidatePath('/listings');
-    revalidatePath(`/categories/${listing.categoryId}`);
+export async function createListing(req: any, formData: ListingFormData) {
+    const { userId } = getAuth(req); // Pass the request object
     
-    return { success: true, listingId: listing.id };
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      throw new ListingError('Invalid listing data', 'VALIDATION_ERROR');
+    if (!userId) {
+      throw new ListingError('You must be logged in to create a listing', 'UNAUTHORIZED');
     }
-    throw new ListingError('Failed to create listing', 'DATABASE_ERROR');
+  
+    try {
+      const validatedData = listingSchema.parse(formData);
+  
+      const listing = await prisma.listing.create({
+        data: {
+          ...validatedData,
+          userId,
+          status: 'PENDING_REVIEW',
+          images: {
+            create: validatedData.images
+          }
+        },
+        include: {
+          images: true
+        }
+      });
+  
+      revalidatePath('/listings');
+      revalidatePath(`/categories/${listing.categoryId}`);
+      
+      return { success: true, listingId: listing.id };
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        throw new ListingError('Invalid listing data', 'VALIDATION_ERROR');
+      }
+      throw new ListingError('Failed to create listing', 'DATABASE_ERROR');
+    }
   }
-}
+  

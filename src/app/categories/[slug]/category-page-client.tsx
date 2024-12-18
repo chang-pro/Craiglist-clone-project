@@ -32,7 +32,7 @@ const sampleListings = [
     location: 'Toronto, ON',
     createdAt: '2024-12-17T00:00:00.000Z', // Fixed timestamp
     status: 'ACTIVE' as const,
-    imageUrl: '/api/placeholder/400/300'
+    imageUrl: 'https://via.placeholder.com/400x300'
   },
   {
     id: '2',
@@ -42,7 +42,7 @@ const sampleListings = [
     createdAt: '2024-12-16T00:00:00.000Z', // Fixed timestamp
     status: 'ACTIVE' as const,
     isPromoted: true,
-    imageUrl: '/api/placeholder/400/300'
+    imageUrl: 'https://via.placeholder.com/400x300'
   }
 ];
 

@@ -16,12 +16,6 @@ enum ListingStatus {
   DELETED
 }
 
-enum ListingType {
-  STANDARD
-  FEATURED
-  PREMIUM
-}
-
 model Category {
   id          String    @id @default(cuid())
   name        String
@@ -30,7 +24,7 @@ model Category {
   active      Boolean   @default(true)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  listings    Listing[]
+  listings    Listing[] // Relation to listings
 }
 
 model Listing {
@@ -39,21 +33,16 @@ model Listing {
   description String
   price       Float
   status      ListingStatus @default(PENDING_REVIEW)
-  type        ListingType   @default(STANDARD)
-  images      Image[]
   category    Category      @relation(fields: [categoryId], references: [id])
   categoryId  String
-  author      User          @relation(fields: [userId], references: [id])
-  userId      String
-  location    String?
-  views       Int           @default(0)
-  expiresAt   DateTime?
+  user        User          @relation(fields: [userId], references: [id])
+  userId      String        // Reference to the creator
+  images      Image[]
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
   @@index([categoryId])
   @@index([userId])
-  @@index([status])
 }
 
 model Image {
@@ -72,7 +61,7 @@ model User {
   email     String    @unique
   name      String?
   phone     String?
-  listings  Listing[]
+  listings  Listing[] // Relation to listings created by the user
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 }
